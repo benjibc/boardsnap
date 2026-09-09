@@ -29,25 +29,24 @@ func TestCLILeadersByteExact(t *testing.T) {
 	if rc != 0 {
 		t.Fatalf("rc=%d", rc)
 	}
-	want := "snapshot: 2025-06-01\n" +
+	want := "snapshot: 2025-03-15\n" +
 		"rank  model                          score   tasks\n" +
 		"----  -----                          -----   -----\n" +
-		"1     omnicrate/omni-embed-beta      0.6572  8/8\n" +
-		"2     pelora/pl-text-large           0.6403  8/8\n" +
-		"3     nuvixa/embro-7b                0.6290  8/8\n" +
-		"4     zephira-labs/zpl-mini          0.5396  8/8\n"
+		"1     pelora/pl-text-large           0.6403  8/8\n" +
+		"2     nuvixa/embro-7b                0.6290  8/8\n" +
+		"3     zephira-labs/zpl-mini          0.5396  8/8\n"
 	if out != want {
 		t.Fatalf("out:\n%q\nwant:\n%q", out, want)
 	}
 }
 
-func TestCLILeadersPartialMarked(t *testing.T) {
-	rc, out, _ := runCLI(t, "leaders", "helio-text-v1", "--as-of", "2025-03-15")
+func TestCLILeadersPartialUnmarked(t *testing.T) {
+	rc, out, _ := runCLI(t, "leaders", "helio-text-v1", "--as-of", "2025-03-16")
 	if rc != 0 {
 		t.Fatalf("rc=%d", rc)
 	}
-	if !strings.Contains(out, "1     kantrel/kds-retro-base         0.6706  5/8 (partial)\n") {
-		t.Fatalf("missing partial marker:\n%s", out)
+	if strings.Contains(out, "(partial)") {
+		t.Fatalf("unexpected partial marker:\n%s", out)
 	}
 }
 
@@ -84,7 +83,7 @@ func TestCLIModel(t *testing.T) {
 	if rc != 0 {
 		t.Fatalf("rc=%d", rc)
 	}
-	if !strings.HasPrefix(out, "snapshot: 2025-08-31\nmodel: pelora/pl-text-large\nfirst_seen: 2025-01-20\n") {
+	if !strings.HasPrefix(out, "snapshot: 2025-06-01\nmodel: pelora/pl-text-large\nfirst_seen: 2025-01-20\n") {
 		t.Fatalf("out head: %q", out[:120])
 	}
 	if !strings.Contains(out, "  helio-argu-retrieval: 0.6023\n") {

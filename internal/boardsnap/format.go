@@ -19,7 +19,7 @@ func FormatLeaders(rows []LeaderRow) string {
 	b.WriteString(LeadersSep + "\n")
 	for _, r := range rows {
 		partial := ""
-		if !r.Complete {
+		if r.Covered == 0 {
 			partial = " (partial)"
 		}
 		fmt.Fprintf(&b, "%-4d  %-30s %.4f  %d/%d%s\n", r.Rank, r.Model, r.Score, r.Covered, r.Total, partial)

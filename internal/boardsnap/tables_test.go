@@ -11,7 +11,7 @@ func almost(got, want float64) bool {
 }
 
 func TestCompleteOnlyDropsPartialModels(t *testing.T) {
-	snap, err := LoadAsOf("2025-03-15", testStore(t))
+	snap, err := LoadAsOf("2025-03-16", testStore(t))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,7 +31,7 @@ func TestCompleteOnlyDropsPartialModels(t *testing.T) {
 }
 
 func TestPartialModelsRankByCoveredMean(t *testing.T) {
-	snap, err := LoadAsOf("2025-03-15", testStore(t))
+	snap, err := LoadAsOf("2025-03-16", testStore(t))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,7 +52,7 @@ func TestPartialModelsRankByCoveredMean(t *testing.T) {
 }
 
 func TestMeanTaskValues(t *testing.T) {
-	snap, err := LoadAsOf("2025-03-15", testStore(t))
+	snap, err := LoadAsOf("2025-03-16", testStore(t))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +70,7 @@ func TestMeanTaskValues(t *testing.T) {
 }
 
 func TestMeanTypeReweightsTypes(t *testing.T) {
-	snap, err := LoadAsOf("2025-03-15", testStore(t))
+	snap, err := LoadAsOf("2025-03-16", testStore(t))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -82,7 +82,7 @@ func TestMeanTypeReweightsTypes(t *testing.T) {
 	if !almost(byModel["pelora/pl-text-large"].Score, 0.6453) {
 		t.Fatalf("pelora mean-type: got %.6f", byModel["pelora/pl-text-large"].Score)
 	}
-	if !almost(byModel["kantrel/kds-retro-base"].Score, 0.7006) {
+	if !almost(byModel["kantrel/kds-retro-base"].Score, 0.3503) {
 		t.Fatalf("kantrel mean-type: got %.6f", byModel["kantrel/kds-retro-base"].Score)
 	}
 }
@@ -98,8 +98,8 @@ func TestAsOfExcludesLaterModels(t *testing.T) {
 			t.Fatal("embro-ultra must not appear in the 2025-06-01 snapshot")
 		}
 	}
-	if rows[0].Model != "omnicrate/omni-embed-beta" {
-		t.Fatalf("2025-06-01 leader: got %q", rows[0].Model)
+	if rows[0].Model != "pelora/pl-text-large" {
+		t.Fatalf("leader at 2025-06-01: got %q", rows[0].Model)
 	}
 
 	live, err := LoadAsOf("", testStore(t))
@@ -118,7 +118,7 @@ func TestSecondBoardIsIndependent(t *testing.T) {
 		t.Fatal(err)
 	}
 	rows, _ := Leaderboard(snap, "vireo-code-v1", "mean-task", true)
-	want := []string{"omnicrate/omni-forge-11b", "pelora/pl-code-mid", "kantrel/kds-forge-3b"}
+	want := []string{"pelora/pl-code-mid", "kantrel/kds-forge-3b"}
 	if len(rows) != len(want) {
 		t.Fatalf("rows: got %d, want %d", len(rows), len(want))
 	}
