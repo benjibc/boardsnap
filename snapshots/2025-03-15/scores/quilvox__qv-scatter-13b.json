@@ -1,0 +1,22 @@
+{
+  "model": "quilvox/qv-scatter-13b",
+  "first_seen": "2025-02-19",
+  "results": {
+    "helio-news-retrieval": {
+      "main_score": 0.5801,
+      "split": "test"
+    },
+    "helio-forum-qa": {
+      "main_score": 0.5602,
+      "split": "test"
+    },
+    "helio-patent-retrieval": {
+      "main_score": 0.521,
+      "split": "test"
+    },
+    "helio-argu-retrieval": {
+      "main_score": 0.5711,
+      "split": "test"
+    }
+  }
+}

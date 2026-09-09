@@ -1,0 +1,38 @@
+{
+  "model": "omnicrate/omni-embed-beta",
+  "first_seen": "2025-05-28",
+  "results": {
+    "helio-news-retrieval": {
+      "main_score": 0.6201,
+      "split": "test"
+    },
+    "helio-forum-qa": {
+      "main_score": 0.611,
+      "split": "test"
+    },
+    "helio-patent-retrieval": {
+      "main_score": 0.5802,
+      "split": "test"
+    },
+    "helio-argu-retrieval": {
+      "main_score": 0.615,
+      "split": "test"
+    },
+    "helio-legal-sts": {
+      "main_score": 0.7302,
+      "split": "test"
+    },
+    "helio-review-sentiment": {
+      "main_score": 0.8201,
+      "split": "test"
+    },
+    "helio-tweet-classification": {
+      "main_score": 0.7702,
+      "split": "test"
+    },
+    "helio-wiki-clustering": {
+      "main_score": 0.5111,
+      "split": "test"
+    }
+  }
+}

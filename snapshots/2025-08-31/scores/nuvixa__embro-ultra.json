@@ -1,0 +1,38 @@
+{
+  "model": "nuvixa/embro-ultra",
+  "first_seen": "2025-08-20",
+  "results": {
+    "helio-news-retrieval": {
+      "main_score": 0.6801,
+      "split": "test"
+    },
+    "helio-forum-qa": {
+      "main_score": 0.671,
+      "split": "test"
+    },
+    "helio-patent-retrieval": {
+      "main_score": 0.6502,
+      "split": "test"
+    },
+    "helio-argu-retrieval": {
+      "main_score": 0.665,
+      "split": "test"
+    },
+    "helio-legal-sts": {
+      "main_score": 0.7602,
+      "split": "test"
+    },
+    "helio-review-sentiment": {
+      "main_score": 0.8401,
+      "split": "test"
+    },
+    "helio-tweet-classification": {
+      "main_score": 0.7902,
+      "split": "test"
+    },
+    "helio-wiki-clustering": {
+      "main_score": 0.5511,
+      "split": "test"
+    }
+  }
+}

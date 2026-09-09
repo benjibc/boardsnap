@@ -1,0 +1,50 @@
+{
+  "model": "nuvixa/embro-7b",
+  "first_seen": "2025-02-02",
+  "results": {
+    "helio-news-retrieval": {
+      "main_score": 0.5901,
+      "split": "test"
+    },
+    "helio-forum-qa": {
+      "main_score": 0.5712,
+      "split": "test"
+    },
+    "helio-patent-retrieval": {
+      "main_score": 0.532,
+      "split": "test"
+    },
+    "helio-argu-retrieval": {
+      "main_score": 0.5877,
+      "split": "test"
+    },
+    "helio-legal-sts": {
+      "main_score": 0.701,
+      "split": "test"
+    },
+    "helio-review-sentiment": {
+      "main_score": 0.7988,
+      "split": "test"
+    },
+    "helio-tweet-classification": {
+      "main_score": 0.7502,
+      "split": "test"
+    },
+    "helio-wiki-clustering": {
+      "main_score": 0.5011,
+      "split": "test"
+    },
+    "vireo-func-completion": {
+      "main_score": 0.4601,
+      "split": "test"
+    },
+    "vireo-bug-localization": {
+      "main_score": 0.4102,
+      "split": "test"
+    },
+    "vireo-test-gen": {
+      "main_score": 0.421,
+      "split": "test"
+    }
+  }
+}

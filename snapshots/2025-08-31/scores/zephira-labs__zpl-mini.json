@@ -1,0 +1,38 @@
+{
+  "model": "zephira-labs/zpl-mini",
+  "first_seen": "2025-01-05",
+  "results": {
+    "helio-news-retrieval": {
+      "main_score": 0.5012,
+      "split": "test"
+    },
+    "helio-forum-qa": {
+      "main_score": 0.4901,
+      "split": "test"
+    },
+    "helio-patent-retrieval": {
+      "main_score": 0.451,
+      "split": "test"
+    },
+    "helio-argu-retrieval": {
+      "main_score": 0.4823,
+      "split": "test"
+    },
+    "helio-legal-sts": {
+      "main_score": 0.6001,
+      "split": "test"
+    },
+    "helio-review-sentiment": {
+      "main_score": 0.7205,
+      "split": "test"
+    },
+    "helio-tweet-classification": {
+      "main_score": 0.6811,
+      "split": "test"
+    },
+    "helio-wiki-clustering": {
+      "main_score": 0.3902,
+      "split": "test"
+    }
+  }
+}

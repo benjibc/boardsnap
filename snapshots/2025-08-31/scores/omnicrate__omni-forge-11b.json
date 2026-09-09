@@ -1,0 +1,26 @@
+{
+  "model": "omnicrate/omni-forge-11b",
+  "first_seen": "2025-08-12",
+  "results": {
+    "vireo-func-completion": {
+      "main_score": 0.4702,
+      "split": "test"
+    },
+    "vireo-bug-localization": {
+      "main_score": 0.4301,
+      "split": "test"
+    },
+    "vireo-test-gen": {
+      "main_score": 0.4402,
+      "split": "test"
+    },
+    "vireo-diff-review": {
+      "main_score": 0.7301,
+      "split": "test"
+    },
+    "vireo-api-sts": {
+      "main_score": 0.6902,
+      "split": "test"
+    }
+  }
+}

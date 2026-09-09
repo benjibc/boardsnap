@@ -1,0 +1,55 @@
+{
+  "freeze_date": "2025-06-01",
+  "boards": [
+    {
+      "id": "helio-text-v1",
+      "name": "Helio Text Standings v1",
+      "tasks": [
+        "helio-news-retrieval",
+        "helio-forum-qa",
+        "helio-patent-retrieval",
+        "helio-argu-retrieval",
+        "helio-legal-sts",
+        "helio-review-sentiment",
+        "helio-tweet-classification",
+        "helio-wiki-clustering"
+      ],
+      "task_types": {
+        "helio-news-retrieval": "retrieval",
+        "helio-forum-qa": "retrieval",
+        "helio-patent-retrieval": "retrieval",
+        "helio-argu-retrieval": "retrieval",
+        "helio-legal-sts": "sts",
+        "helio-review-sentiment": "classification",
+        "helio-tweet-classification": "classification",
+        "helio-wiki-clustering": "clustering"
+      },
+      "aggregates": [
+        "mean-task",
+        "mean-type"
+      ]
+    },
+    {
+      "id": "vireo-code-v1",
+      "name": "Vireo Code Standings v1",
+      "tasks": [
+        "vireo-func-completion",
+        "vireo-bug-localization",
+        "vireo-test-gen",
+        "vireo-diff-review",
+        "vireo-api-sts"
+      ],
+      "task_types": {
+        "vireo-func-completion": "completion",
+        "vireo-bug-localization": "localization",
+        "vireo-test-gen": "generation",
+        "vireo-diff-review": "classification",
+        "vireo-api-sts": "sts"
+      },
+      "aggregates": [
+        "mean-task",
+        "mean-type"
+      ]
+    }
+  ]
+}

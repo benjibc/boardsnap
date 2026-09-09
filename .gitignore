@@ -1,0 +1,3 @@
+boardsnap
+*.test
+/dist/

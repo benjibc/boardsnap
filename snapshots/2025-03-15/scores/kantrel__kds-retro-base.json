@@ -1,0 +1,26 @@
+{
+  "model": "kantrel/kds-retro-base",
+  "first_seen": "2025-03-01",
+  "results": {
+    "helio-news-retrieval": {
+      "main_score": 0.6712,
+      "split": "test"
+    },
+    "helio-forum-qa": {
+      "main_score": 0.6601,
+      "split": "test"
+    },
+    "helio-patent-retrieval": {
+      "main_score": 0.6402,
+      "split": "test"
+    },
+    "helio-argu-retrieval": {
+      "main_score": 0.631,
+      "split": "test"
+    },
+    "helio-legal-sts": {
+      "main_score": 0.7505,
+      "split": "test"
+    }
+  }
+}
