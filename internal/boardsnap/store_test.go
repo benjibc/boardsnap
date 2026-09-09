@@ -25,9 +25,9 @@ func TestResolveLatestWithoutAsOf(t *testing.T) {
 func TestResolveBetweenSnapshots(t *testing.T) {
 	store := testStore(t)
 	for asOf, want := range map[string]string{
-		"2025-06-01": "2025-03-15",
+		"2025-06-01": "2025-06-01",
 		"2025-07-19": "2025-06-01",
-		"2025-03-16": "2025-03-15",
+		"2025-03-15": "2025-03-15",
 	} {
 		got, err := ResolveSnapshotDate(asOf, store)
 		if err != nil {
@@ -65,5 +65,24 @@ func TestLoadSnapshotBoards(t *testing.T) {
 	}
 	if helio.TaskTypes["helio-legal-sts"] != "sts" {
 		t.Fatalf("task type: got %q", helio.TaskTypes["helio-legal-sts"])
+	}
+}
+
+func TestResolveExactFreezeDateInclusive(t *testing.T) {
+	store := testStore(t)
+	// An as-of date equal to a freeze date must resolve to that snapshot,
+	// including the very first freeze date.
+	for asOf, want := range map[string]string{
+		"2025-03-15": "2025-03-15",
+		"2025-06-01": "2025-06-01",
+		"2025-08-31": "2025-08-31",
+	} {
+		got, err := ResolveSnapshotDate(asOf, store)
+		if err != nil {
+			t.Fatalf("as-of %s: %v", asOf, err)
+		}
+		if got != want {
+			t.Fatalf("as-of %s: got %q, want %q", asOf, got, want)
+		}
 	}
 }
