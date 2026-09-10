@@ -110,7 +110,7 @@ func ResolveSnapshotDate(asOf, store string) (string, error) {
 		return dates[len(dates)-1], nil
 	}
 	if !DateRe.MatchString(asOf) {
-		return "", &StoreError{fmt.Sprintf("invalid as-of date: %q", asOf)}
+		return "", &StoreError{fmt.Sprintf("invalid as-of date: %q (want YYYY-MM-DD)", asOf)}
 	}
 	resolved := ""
 	for _, d := range dates {
@@ -163,7 +163,12 @@ func LoadSnapshot(date, store string) (Snapshot, error) {
 		if row.FirstSeen == "" {
 			row.FirstSeen = date
 		}
-		_ = row
+		// Row-level as-of invariant: a model cannot have existed before its
+		// first_seen date, so a snapshot never ranks rows whose first_seen is
+		// later than the freeze date (robust to retro-dated backfills).
+		if row.FirstSeen > date {
+			continue
+		}
 		for task, res := range sd.Results {
 			if res.MainScore != nil {
 				row.Scores[task] = *res.MainScore

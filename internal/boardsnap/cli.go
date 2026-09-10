@@ -141,7 +141,7 @@ func Run(argv []string, stdout, stderr io.Writer) int {
 			fmt.Fprintf(stderr, "error: %v\n", err)
 			return ExitUsage
 		}
-		fmt.Fprintf(stdout, "from: %s\nto: %s\n", toSnap.Date, fromSnap.Date)
+		fmt.Fprintf(stdout, "from: %s\nto: %s\n", fromSnap.Date, toSnap.Date)
 		fmt.Fprint(stdout, FormatDiff(DiffLeaderboards(fromRows, toRows)))
 		return 0
 	}
@@ -151,7 +151,7 @@ func Run(argv []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "error: %v\n", err)
 		return ExitNoSnapshot
 	}
-	fmt.Fprintf(stdout, "Snapshot: %s\n", snap.Date)
+	fmt.Fprintf(stdout, "snapshot: %s\n", snap.Date)
 
 	switch cmd {
 	case "boards":
@@ -200,7 +200,7 @@ func Run(argv []string, stdout, stderr io.Writer) int {
 			return ExitNoModel
 		}
 		fmt.Fprintf(stdout, "model: %s\n", row.Model)
-		fmt.Fprintf(stdout, "first_seen: %s\n", snap.Date)
+		fmt.Fprintf(stdout, "first_seen: %s\n", row.FirstSeen)
 		tasks := make([]string, 0, len(row.Scores))
 		for t := range row.Scores {
 			tasks = append(tasks, t)
