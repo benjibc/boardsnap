@@ -50,8 +50,8 @@ func Run(argv []string, stdout, stderr io.Writer) int {
 			fmt.Fprintf(stderr, "error: %v\n", err)
 			return ExitNoSnapshot
 		}
-		for i := len(dates) - 1; i >= 0; i-- {
-			fmt.Fprintln(stdout, dates[i])
+		for _, d := range dates {
+			fmt.Fprintln(stdout, d)
 		}
 		return 0
 	}
@@ -125,11 +125,11 @@ func Run(argv []string, stdout, stderr io.Writer) int {
 		}
 		if _, ok := fromSnap.Boards[pos[0]]; !ok {
 			fmt.Fprintf(stderr, "error: unknown board %q in snapshot %s\n", pos[0], fromSnap.Date)
-			return ExitUsage
+			return ExitNoBoard
 		}
 		if _, ok := toSnap.Boards[pos[0]]; !ok {
 			fmt.Fprintf(stderr, "error: unknown board %q in snapshot %s\n", pos[0], toSnap.Date)
-			return ExitUsage
+			return ExitNoBoard
 		}
 		fromRows, err := Leaderboard(fromSnap, pos[0], *aggregate, *completeOnly)
 		if err != nil {
@@ -164,7 +164,7 @@ func Run(argv []string, stdout, stderr io.Writer) int {
 		}
 		if _, ok := snap.Boards[pos[0]]; !ok {
 			fmt.Fprintf(stderr, "error: unknown board %q in snapshot %s\n", pos[0], snap.Date)
-			return ExitUsage
+			return ExitNoBoard
 		}
 		if cmd == "tasks" {
 			for _, t := range snap.Boards[pos[0]].Tasks {
@@ -197,26 +197,17 @@ func Run(argv []string, stdout, stderr io.Writer) int {
 		row, ok := snap.Rows[pos[0]]
 		if !ok {
 			fmt.Fprintf(stderr, "error: unknown model %q in snapshot %s\n", pos[0], snap.Date)
-			return ExitUsage
+			return ExitNoModel
 		}
 		fmt.Fprintf(stdout, "model: %s\n", row.Model)
 		fmt.Fprintf(stdout, "first_seen: %s\n", row.FirstSeen)
-		type kv struct {
-			task  string
-			score float64
+		tasks := make([]string, 0, len(row.Scores))
+		for t := range row.Scores {
+			tasks = append(tasks, t)
 		}
-		pairs := make([]kv, 0, len(row.Scores))
-		for t, sc := range row.Scores {
-			pairs = append(pairs, kv{t, sc})
-		}
-		sort.Slice(pairs, func(i, j int) bool {
-			if pairs[i].score != pairs[j].score {
-				return pairs[i].score > pairs[j].score
-			}
-			return pairs[i].task < pairs[j].task
-		})
-		for _, pair := range pairs {
-			fmt.Fprintf(stdout, "  %s: %.4f\n", pair.task, pair.score)
+		sort.Strings(tasks)
+		for _, t := range tasks {
+			fmt.Fprintf(stdout, "  %s: %.4f\n", t, row.Scores[t])
 		}
 		return 0
 	default:

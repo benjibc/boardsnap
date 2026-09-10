@@ -2,6 +2,7 @@ package boardsnap
 
 import (
 	"bytes"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -19,7 +20,7 @@ func TestCLISnapshots(t *testing.T) {
 	if rc != 0 {
 		t.Fatalf("rc=%d", rc)
 	}
-	if out != "2025-08-31\n2025-06-01\n2025-03-15\n" {
+	if out != "2025-03-15\n2025-06-01\n2025-08-31\n" {
 		t.Fatalf("out: %q", out)
 	}
 }
@@ -63,8 +64,8 @@ func TestCLINoSnapshotExitCode(t *testing.T) {
 
 func TestCLIUnknownBoard(t *testing.T) {
 	rc, _, errOut := runCLI(t, "leaders", "nope-v9", "--as-of", "2025-06-01")
-	if rc != ExitUsage {
-		t.Fatalf("rc=%d, want %d", rc, ExitUsage)
+	if rc != ExitNoBoard {
+		t.Fatalf("rc=%d, want %d", rc, ExitNoBoard)
 	}
 	if !strings.Contains(errOut, "unknown board") {
 		t.Fatalf("err: %q", errOut)
@@ -74,8 +75,8 @@ func TestCLIUnknownBoard(t *testing.T) {
 func TestCLIUnknownModel(t *testing.T) {
 	// embro-ultra exists in the live snapshot but not at 2025-06-01.
 	rc, _, _ := runCLI(t, "model", "nuvixa/embro-ultra", "--as-of", "2025-06-01")
-	if rc != ExitUsage {
-		t.Fatalf("rc=%d, want %d", rc, ExitUsage)
+	if rc != ExitNoModel {
+		t.Fatalf("rc=%d, want %d", rc, ExitNoModel)
 	}
 }
 
@@ -131,5 +132,62 @@ func TestCLILeadersAsOfOnFreezeDate(t *testing.T) {
 	}
 	if !strings.HasPrefix(out, "snapshot: 2025-03-15\n") || strings.Contains(out, "omnicrate") {
 		t.Fatalf("first freeze date answered from the wrong snapshot:\n%s", out)
+	}
+}
+
+func TestCLIBoardsOrderAndSnapshotsChronological(t *testing.T) {
+	// boards lists ids in ascending order; snapshots lists freeze dates
+	// chronologically.
+	rc, out, _ := runCLI(t, "snapshots")
+	if rc != 0 {
+		t.Fatalf("rc=%d", rc)
+	}
+	if out != "2025-03-15\n2025-06-01\n2025-08-31\n" {
+		t.Fatalf("snapshots not chronological:\n%s", out)
+	}
+	rc, out, _ = runCLI(t, "boards", "--as-of", "2025-08-31")
+	if rc != 0 {
+		t.Fatalf("rc=%d", rc)
+	}
+	helio := strings.Index(out, "helio-text-v1")
+	vireo := strings.Index(out, "vireo-code-v1")
+	if helio < 0 || vireo < 0 || !(helio < vireo) {
+		t.Fatalf("boards not in ascending id order:\n%s", out)
+	}
+}
+
+func TestCLIModelTasksSortedById(t *testing.T) {
+	// The model view lists tasks alphabetically, not by score.
+	rc, out, _ := runCLI(t, "model", "nuvixa/embro-7b", "--as-of", "2025-08-31")
+	if rc != 0 {
+		t.Fatalf("rc=%d", rc)
+	}
+	lines := strings.Split(strings.TrimSpace(out), "\n")
+	var taskLines []string
+	for _, l := range lines {
+		if strings.HasPrefix(l, "  ") {
+			taskLines = append(taskLines, strings.TrimSpace(l))
+		}
+	}
+	sorted := append([]string(nil), taskLines...)
+	sort.Strings(sorted)
+	for i := range taskLines {
+		if taskLines[i] != sorted[i] {
+			t.Fatalf("tasks not sorted by id:\n%s", strings.Join(taskLines, "\n"))
+		}
+	}
+}
+
+func TestCLILeadersJSONBooleanComplete(t *testing.T) {
+	// JSON `complete` is a boolean, not a quoted string.
+	rc, out, _ := runCLI(t, "leaders", "helio-text-v1", "--as-of", "2025-06-01", "--complete-only", "--format", "json")
+	if rc != 0 {
+		t.Fatalf("rc=%d", rc)
+	}
+	if strings.Contains(out, `"complete": "true"`) {
+		t.Fatalf("complete must be a JSON boolean:\n%s", out)
+	}
+	if !strings.Contains(out, `"complete": true`) {
+		t.Fatalf("missing boolean complete:\n%s", out)
 	}
 }
