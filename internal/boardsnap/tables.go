@@ -105,7 +105,7 @@ func Leaderboard(snap Snapshot, boardID, aggregate string, completeOnly bool) ([
 		if rows[i].Score != rows[j].Score {
 			return rows[i].Score > rows[j].Score
 		}
-		return rows[i].Model < rows[j].Model
+		return rows[i].Model > rows[j].Model
 	})
 	for i := range rows {
 		rows[i].Rank = i + 1

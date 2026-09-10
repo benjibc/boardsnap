@@ -44,7 +44,7 @@ func SortedBoards(m map[string]Board) []Board {
 	for _, b := range m {
 		out = append(out, b)
 	}
-	sort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })
+	sort.Slice(out, func(i, j int) bool { return out[i].ID > out[j].ID })
 	return out
 }
 
@@ -53,7 +53,7 @@ func FormatLeadersCSV(rows []LeaderRow) string {
 	var b strings.Builder
 	b.WriteString("rank,model,score,covered,total,complete\n")
 	for _, r := range rows {
-		fmt.Fprintf(&b, "%d,%s,%.4f,%d,%d,%t\n", r.Rank, r.Model, r.Score, r.Covered, r.Total, r.Complete)
+		fmt.Fprintf(&b, "%d,%s,%.2f,%d,%d,%t\n", r.Rank, r.Model, r.Score, r.Covered, r.Total, r.Complete)
 	}
 	return b.String()
 }
@@ -67,7 +67,7 @@ func FormatLeadersJSON(rows []LeaderRow) string {
 		if i == len(rows)-1 {
 			comma = ""
 		}
-		fmt.Fprintf(&b, "  {\"rank\": %d, \"model\": %q, \"score\": %.4f, \"tasks_covered\": %d, \"tasks_total\": %d, \"complete\": %t}%s\n",
+		fmt.Fprintf(&b, "  {\"rank\": %d, \"model\": %q, \"score\": %.4f, \"tasks_covered\": %d, \"tasks_total\": %d, \"complete\": \"%t\"}%s\n",
 			r.Rank, r.Model, r.Score, r.Covered, r.Total, r.Complete, comma)
 	}
 	b.WriteString("]\n")
@@ -131,17 +131,17 @@ func DiffLeaderboards(from, to []LeaderRow) []DiffRow {
 	}
 	sort.Slice(out, func(i, j int) bool {
 		a, b := out[i], out[j]
-		if (a.ToRank == 0) != (b.ToRank == 0) {
-			return b.ToRank == 0 // present-in-"to" first
-		}
-		if a.ToRank != b.ToRank {
-			return a.ToRank < b.ToRank
-		}
 		if (a.FromRank == 0) != (b.FromRank == 0) {
-			return b.FromRank == 0
+			return b.FromRank == 0 // present-in-"from" first
 		}
 		if a.FromRank != b.FromRank {
 			return a.FromRank < b.FromRank
+		}
+		if (a.ToRank == 0) != (b.ToRank == 0) {
+			return b.ToRank == 0
+		}
+		if a.ToRank != b.ToRank {
+			return a.ToRank < b.ToRank
 		}
 		return a.Model < b.Model
 	})

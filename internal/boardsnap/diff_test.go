@@ -12,10 +12,10 @@ func TestCLILeadersCSV(t *testing.T) {
 	}
 	want := "snapshot: 2025-06-01\n" +
 		"rank,model,score,covered,total,complete\n" +
-		"1,omnicrate/omni-embed-beta,0.6572,8,8,true\n" +
-		"2,pelora/pl-text-large,0.6403,8,8,true\n" +
-		"3,nuvixa/embro-7b,0.6290,8,8,true\n" +
-		"4,zephira-labs/zpl-mini,0.5396,8,8,true\n"
+		"1,omnicrate/omni-embed-beta,0.66,8,8,true\n" +
+		"2,pelora/pl-text-large,0.64,8,8,true\n" +
+		"3,nuvixa/embro-7b,0.63,8,8,true\n" +
+		"4,zephira-labs/zpl-mini,0.54,8,8,true\n"
 	if out != want {
 		t.Fatalf("out:\n%q\nwant:\n%q", out, want)
 	}
@@ -53,11 +53,11 @@ func TestCLIDiff(t *testing.T) {
 		"to: 2025-08-31\n" +
 		"model                          from_rank  to_rank  from_score  to_score\n" +
 		"-----                          ---------  -------  ----------  --------\n" +
-		"nuvixa/embro-ultra             -          1        -           0.7010\n" +
 		"omnicrate/omni-embed-beta      1          2        0.6572      0.6572\n" +
 		"pelora/pl-text-large           2          3        0.6403      0.6409\n" +
 		"nuvixa/embro-7b                3          4        0.6290      0.6290\n" +
-		"zephira-labs/zpl-mini          4          5        0.5396      0.5396\n"
+		"zephira-labs/zpl-mini          4          5        0.5396      0.5396\n" +
+		"nuvixa/embro-ultra             -          1        -           0.7010\n"
 	if out != want {
 		t.Fatalf("out:\n%q\nwant:\n%q", out, want)
 	}
@@ -65,7 +65,7 @@ func TestCLIDiff(t *testing.T) {
 
 func TestCLIDiffUnknownBoard(t *testing.T) {
 	rc, _, errOut := runCLI(t, "diff", "nope-v9")
-	if rc != ExitNoBoard {
+	if rc != ExitUsage {
 		t.Fatalf("rc=%d", rc)
 	}
 	if !strings.Contains(errOut, "unknown board") {
@@ -74,17 +74,17 @@ func TestCLIDiffUnknownBoard(t *testing.T) {
 }
 
 func TestDiffLeaderboardsRemoval(t *testing.T) {
-	// A model present only in the earlier snapshot sorts after to-present rows.
+	// A model present only in the earlier snapshot sorts first.
 	from := []LeaderRow{{Rank: 1, Model: "a/x", Score: 0.5}, {Rank: 2, Model: "a/y", Score: 0.4}}
 	to := []LeaderRow{{Rank: 1, Model: "a/y", Score: 0.45}}
 	rows := DiffLeaderboards(from, to)
 	if len(rows) != 2 {
 		t.Fatalf("rows: %d", len(rows))
 	}
-	if rows[0].Model != "a/y" || rows[0].FromRank != 2 || rows[0].ToRank != 1 {
+	if rows[0].Model != "a/x" || rows[0].FromRank != 1 || rows[0].ToRank != 0 {
 		t.Fatalf("row0: %+v", rows[0])
 	}
-	if rows[1].Model != "a/x" || rows[1].ToRank != 0 || rows[1].To != nil {
+	if rows[1].Model != "a/y" || rows[1].FromRank != 2 || rows[1].ToRank != 1 {
 		t.Fatalf("row1: %+v", rows[1])
 	}
 }

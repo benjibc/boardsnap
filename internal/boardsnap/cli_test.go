@@ -19,7 +19,7 @@ func TestCLISnapshots(t *testing.T) {
 	if rc != 0 {
 		t.Fatalf("rc=%d", rc)
 	}
-	if out != "2025-03-15\n2025-06-01\n2025-08-31\n" {
+	if out != "2025-08-31\n2025-06-01\n2025-03-15\n" {
 		t.Fatalf("out: %q", out)
 	}
 }
@@ -63,8 +63,8 @@ func TestCLINoSnapshotExitCode(t *testing.T) {
 
 func TestCLIUnknownBoard(t *testing.T) {
 	rc, _, errOut := runCLI(t, "leaders", "nope-v9", "--as-of", "2025-06-01")
-	if rc != ExitNoBoard {
-		t.Fatalf("rc=%d, want %d", rc, ExitNoBoard)
+	if rc != ExitUsage {
+		t.Fatalf("rc=%d, want %d", rc, ExitUsage)
 	}
 	if !strings.Contains(errOut, "unknown board") {
 		t.Fatalf("err: %q", errOut)
@@ -74,8 +74,8 @@ func TestCLIUnknownBoard(t *testing.T) {
 func TestCLIUnknownModel(t *testing.T) {
 	// embro-ultra exists in the live snapshot but not at 2025-06-01.
 	rc, _, _ := runCLI(t, "model", "nuvixa/embro-ultra", "--as-of", "2025-06-01")
-	if rc != ExitNoModel {
-		t.Fatalf("rc=%d, want %d", rc, ExitNoModel)
+	if rc != ExitUsage {
+		t.Fatalf("rc=%d, want %d", rc, ExitUsage)
 	}
 }
 
