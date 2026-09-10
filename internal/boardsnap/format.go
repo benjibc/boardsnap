@@ -19,7 +19,7 @@ func FormatLeaders(rows []LeaderRow) string {
 	b.WriteString(LeadersSep + "\n")
 	for _, r := range rows {
 		partial := ""
-		if r.Covered == 0 {
+		if !r.Complete {
 			partial = " (partial)"
 		}
 		fmt.Fprintf(&b, "%-4d  %-30s %.4f  %d/%d%s\n", r.Rank, r.Model, r.Score, r.Covered, r.Total, partial)
@@ -131,17 +131,17 @@ func DiffLeaderboards(from, to []LeaderRow) []DiffRow {
 	}
 	sort.Slice(out, func(i, j int) bool {
 		a, b := out[i], out[j]
-		if (a.FromRank == 0) != (b.FromRank == 0) {
-			return b.FromRank == 0 // present-in-"from" first
-		}
-		if a.FromRank != b.FromRank {
-			return a.FromRank < b.FromRank
-		}
 		if (a.ToRank == 0) != (b.ToRank == 0) {
-			return b.ToRank == 0
+			return b.ToRank == 0 // present-in-"to" first
 		}
 		if a.ToRank != b.ToRank {
 			return a.ToRank < b.ToRank
+		}
+		if (a.FromRank == 0) != (b.FromRank == 0) {
+			return b.FromRank == 0
+		}
+		if a.FromRank != b.FromRank {
+			return a.FromRank < b.FromRank
 		}
 		return a.Model < b.Model
 	})
