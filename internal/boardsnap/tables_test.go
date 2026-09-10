@@ -169,3 +169,27 @@ func TestMeanTypeUncoveredTypesExcluded(t *testing.T) {
 		t.Fatalf("MeanTask: got %.6f", mt)
 	}
 }
+
+func TestLeaderboardTieBreakAscendingModel(t *testing.T) {
+	// Equal scores must tie-break by ascending model id (README: "ties break
+	// by ascending model id").
+	snap := Snapshot{
+		Date:   "2099-01-01",
+		Boards: map[string]Board{},
+		Rows:   map[string]ModelRow{},
+	}
+	snap.Boards["b-v1"] = Board{ID: "b-v1", Tasks: []string{"t1"}, TaskTypes: map[string]string{"t1": "retrieval"}}
+	for _, m := range []string{"zeta/zzz-1", "alpha/aaa-1", "mid/mmm-1"} {
+		snap.Rows[m] = ModelRow{Model: m, Scores: map[string]float64{"t1": 0.5000}}
+	}
+	rows, err := Leaderboard(snap, "b-v1", "mean-task", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"alpha/aaa-1", "mid/mmm-1", "zeta/zzz-1"}
+	for i, r := range rows {
+		if r.Model != want[i] {
+			t.Fatalf("row %d: got %q, want %q", i, r.Model, want[i])
+		}
+	}
+}

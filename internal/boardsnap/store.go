@@ -69,11 +69,16 @@ func DefaultStore() (string, error) {
 	if err != nil {
 		return "", &StoreError{"cannot locate working directory"}
 	}
-	candidate := filepath.Join(wd, "snapshots")
-	if st, statErr := os.Stat(candidate); statErr == nil && st.IsDir() {
-		return candidate, nil
+	for dir := wd; ; dir = filepath.Dir(dir) {
+		candidate := filepath.Join(dir, "snapshots")
+		if st, statErr := os.Stat(candidate); statErr == nil && st.IsDir() {
+			return candidate, nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return "", &StoreError{"snapshot store not found (no snapshots/ directory at or above the working directory)"}
+		}
 	}
-	return "", &StoreError{"snapshot store not found (no snapshots/ directory in the working directory)"}
 }
 
 // ListSnapshotDates returns the sorted freeze dates available in the store.

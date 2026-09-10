@@ -1,6 +1,7 @@
 package boardsnap
 
 import (
+	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -84,5 +85,33 @@ func TestResolveExactFreezeDateInclusive(t *testing.T) {
 		if got != want {
 			t.Fatalf("as-of %s: got %q, want %q", asOf, got, want)
 		}
+	}
+}
+
+func TestDefaultStoreWalksUpward(t *testing.T) {
+	// A snapshots/ directory above the working directory must be discovered
+	// by walking upward from the cwd.
+	base := t.TempDir()
+	nested := filepath.Join(base, "a", "b", "c")
+	if err := os.MkdirAll(nested, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(base, "snapshots", "2025-01-01"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	old, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(nested); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = os.Chdir(old) }()
+	got, err := DefaultStore()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := filepath.Join(base, "snapshots"); got != want {
+		t.Fatalf("DefaultStore: got %q, want %q", got, want)
 	}
 }
