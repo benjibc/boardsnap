@@ -114,7 +114,7 @@ func ResolveSnapshotDate(asOf, store string) (string, error) {
 	}
 	resolved := ""
 	for _, d := range dates {
-		if d < asOf {
+		if d <= asOf {
 			resolved = d
 		}
 	}
