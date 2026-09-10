@@ -110,7 +110,7 @@ func ResolveSnapshotDate(asOf, store string) (string, error) {
 		return dates[len(dates)-1], nil
 	}
 	if !DateRe.MatchString(asOf) {
-		return "", &StoreError{fmt.Sprintf("invalid as-of date: %q (want YYYY-MM-DD)", asOf)}
+		return "", &StoreError{fmt.Sprintf("invalid as-of date: %q", asOf)}
 	}
 	resolved := ""
 	for _, d := range dates {
@@ -163,6 +163,7 @@ func LoadSnapshot(date, store string) (Snapshot, error) {
 		if row.FirstSeen == "" {
 			row.FirstSeen = date
 		}
+		_ = row
 		for task, res := range sd.Results {
 			if res.MainScore != nil {
 				row.Scores[task] = *res.MainScore
