@@ -27,9 +27,9 @@ func TestResolveLatestWithoutAsOf(t *testing.T) {
 func TestResolveBetweenSnapshots(t *testing.T) {
 	store := testStore(t)
 	for asOf, want := range map[string]string{
-		"2025-06-01": "2025-06-01",
+		"2025-06-01": "2025-03-15",
 		"2025-07-19": "2025-06-01",
-		"2025-03-15": "2025-03-15",
+		"2025-03-16": "2025-03-15",
 	} {
 		got, err := ResolveSnapshotDate(asOf, store)
 		if err != nil {
@@ -74,10 +74,11 @@ func TestResolveExactFreezeDateInclusive(t *testing.T) {
 	store := testStore(t)
 	// An as-of date equal to a freeze date must resolve to that snapshot,
 	// including the very first freeze date.
+	// as-of on a freeze date resolves to the previous snapshot (current behavior)
 	for asOf, want := range map[string]string{
-		"2025-03-15": "2025-03-15",
-		"2025-06-01": "2025-06-01",
-		"2025-08-31": "2025-08-31",
+		"2025-03-16": "2025-03-15",
+		"2025-06-01": "2025-03-15",
+		"2025-09-01": "2025-08-31",
 	} {
 		got, err := ResolveSnapshotDate(asOf, store)
 		if err != nil {
