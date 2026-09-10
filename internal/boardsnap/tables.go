@@ -40,36 +40,28 @@ func MeanTask(scores map[string]float64, board Board) (score float64, ok bool) {
 	return sum / float64(n), true
 }
 
-// MeanType averages per-type means over every type the board declares.
+// MeanType averages per-type means over covered tasks.
 func MeanType(scores map[string]float64, board Board) (float64, bool) {
 	typeSum := map[string]float64{}
 	typeN := map[string]int{}
-	var allTypes []string
 	for _, t := range board.Tasks {
-		typ := board.TaskTypes[t]
-		if typ == "" {
-			typ = "unknown"
-		}
-		if typeN[typ] == 0 {
-			allTypes = append(allTypes, typ)
-		}
-		typeN[typ]++
 		if s, present := scores[t]; present {
-			typeSum[typ] += s
-		}
-	}
-	var total float64
-	for _, typ := range allTypes {
-		if n := typeN[typ]; n > 0 {
-			if sum, ok := typeSum[typ]; ok {
-				total += sum / float64(n)
+			typ := board.TaskTypes[t]
+			if typ == "" {
+				typ = "unknown"
 			}
+			typeSum[typ] += s
+			typeN[typ]++
 		}
 	}
-	if len(allTypes) == 0 {
+	if len(typeN) == 0 {
 		return 0, false
 	}
-	return total / float64(len(allTypes)), true
+	var total float64
+	for typ, sum := range typeSum {
+		total += sum / float64(typeN[typ])
+	}
+	return total / float64(len(typeN)), true
 }
 
 // Aggregates maps aggregate names to their computation.
@@ -113,7 +105,7 @@ func Leaderboard(snap Snapshot, boardID, aggregate string, completeOnly bool) ([
 		if rows[i].Score != rows[j].Score {
 			return rows[i].Score > rows[j].Score
 		}
-		return rows[i].Model > rows[j].Model
+		return rows[i].Model < rows[j].Model
 	})
 	for i := range rows {
 		rows[i].Rank = i + 1
