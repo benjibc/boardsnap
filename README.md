@@ -49,7 +49,10 @@ A score file records one model's results at that snapshot:
 
 Snapshot directories are named by their freeze date (`YYYY-MM-DD`) and are
 never edited after creation. New models appear only in snapshots frozen on or
-after their `first_seen` date.
+after their `first_seen` date. The loader enforces this invariant per row: a
+score file whose `first_seen` is later than its snapshot's freeze date (e.g. a
+retro-dated backfill) is excluded from that snapshot, so an as-of query can
+never rank a model that did not exist at the freeze date.
 
 ## Commands
 

@@ -19,7 +19,7 @@ func TestCompleteOnlyDropsPartialModels(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"pelora/pl-text-large", "nuvixa/embro-7b", "pelora/pl-text-base", "zephira-labs/zpl-mini"}
+	want := []string{"pelora/pl-text-large", "nuvixa/embro-7b", "zephira-labs/zpl-mini"}
 	if len(rows) != len(want) {
 		t.Fatalf("rows: got %d, want %d", len(rows), len(want))
 	}
@@ -40,13 +40,13 @@ func TestPartialModelsRankByCoveredMean(t *testing.T) {
 		t.Fatal(err)
 	}
 	top := rows[0]
-	if top.Model != "pelora/pl-text-large" {
+	if top.Model != "kantrel/kds-retro-base" || top.Complete {
 		t.Fatalf("top: got %+v", top)
 	}
-	if top.Covered != 8 || top.Total != 8 {
+	if top.Covered != 5 || top.Total != 8 {
 		t.Fatalf("coverage: got %d/%d", top.Covered, top.Total)
 	}
-	if !almost(top.Score, 0.6619) {
+	if !almost(top.Score, 0.6706) {
 		t.Fatalf("score: got %.6f", top.Score)
 	}
 }
@@ -61,10 +61,10 @@ func TestMeanTaskValues(t *testing.T) {
 	for _, r := range rows {
 		byModel[r.Model] = r
 	}
-	if !almost(byModel["pelora/pl-text-large"].Score, 0.6619) {
+	if !almost(byModel["pelora/pl-text-large"].Score, 0.6403) {
 		t.Fatalf("pelora: got %.6f", byModel["pelora/pl-text-large"].Score)
 	}
-	if !almost(byModel["nuvixa/embro-7b"].Score, 0.6473) {
+	if !almost(byModel["nuvixa/embro-7b"].Score, 0.6290) {
 		t.Fatalf("embro-7b: got %.6f", byModel["nuvixa/embro-7b"].Score)
 	}
 }
@@ -98,8 +98,13 @@ func TestAsOfExcludesLaterModels(t *testing.T) {
 			t.Fatal("embro-ultra must not appear in the 2025-06-01 snapshot")
 		}
 	}
-	if rows[0].Model != "omnicrate/omni-embed-v2" {
+	if rows[0].Model != "omnicrate/omni-embed-beta" {
 		t.Fatalf("2025-06-01 leader: got %q", rows[0].Model)
+	}
+	for _, r := range rows {
+		if r.Model == "omnicrate/omni-embed-v2" {
+			t.Fatal("omni-embed-v2 (first_seen 2025-07-15) must not appear in the 2025-06-01 snapshot")
+		}
 	}
 
 	live, err := LoadAsOf("", testStore(t))
@@ -107,7 +112,7 @@ func TestAsOfExcludesLaterModels(t *testing.T) {
 		t.Fatal(err)
 	}
 	liveRows, _ := Leaderboard(live, "helio-text-v1", "mean-task", true)
-	if liveRows[0].Model != "nuvixa/embro-ultra" || !almost(liveRows[0].Score, 0.7224) {
+	if liveRows[0].Model != "nuvixa/embro-ultra" || !almost(liveRows[0].Score, 0.7010) {
 		t.Fatalf("live leader: got %+v", liveRows[0])
 	}
 }
@@ -163,9 +168,9 @@ func TestMeanTypeUncoveredTypesExcluded(t *testing.T) {
 	if !almost(got, want) {
 		t.Fatalf("MeanType: got %.6f, want %.6f", got, want)
 	}
-	// mean-task over covered tasks minus the last (current behavior):
+	// mean-task over covered tasks for the same model:
 	mt, _ := MeanTask(scores, board)
-	if !almost(mt, (0.60+0.40)/2) {
+	if !almost(mt, (0.60+0.40+0.80)/3) {
 		t.Fatalf("MeanTask: got %.6f", mt)
 	}
 }
@@ -191,5 +196,24 @@ func TestLeaderboardTieBreakAscendingModel(t *testing.T) {
 		if r.Model != want[i] {
 			t.Fatalf("row %d: got %q, want %q", i, r.Model, want[i])
 		}
+	}
+}
+
+func TestCompleteOnlyDropsAnyMissingTask(t *testing.T) {
+	// A model covering 7 of 8 board tasks must be dropped by --complete-only:
+	// complete coverage means every board task, not all-but-one.
+	snap := Snapshot{
+		Date:   "2099-01-01",
+		Boards: map[string]Board{"b-v1": {ID: "b-v1", Tasks: []string{"t1", "t2", "t3"}}},
+		Rows:   map[string]ModelRow{},
+	}
+	snap.Rows["full/m1"] = ModelRow{Model: "full/m1", Scores: map[string]float64{"t1": 0.5, "t2": 0.5, "t3": 0.5}}
+	snap.Rows["seven/m2"] = ModelRow{Model: "seven/m2", Scores: map[string]float64{"t1": 0.9, "t2": 0.9}}
+	rows, err := Leaderboard(snap, "b-v1", "mean-task", true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rows) != 1 || rows[0].Model != "full/m1" {
+		t.Fatalf("--complete-only must drop any model missing a board task: %+v", rows)
 	}
 }

@@ -27,20 +27,17 @@ func Coverage(scores map[string]float64, board Board) (int, int) {
 // model covers. ok is false when the model covers none of the board's tasks.
 func MeanTask(scores map[string]float64, board Board) (score float64, ok bool) {
 	var sum float64
-	var vals []float64
+	var n int
 	for _, t := range board.Tasks {
 		if s, present := scores[t]; present {
-			vals = append(vals, s)
+			sum += s
+			n++
 		}
 	}
-	if len(vals) == 0 {
+	if n == 0 {
 		return 0, false
 	}
-	// average over the covered tasks minus the last one
-	for _, v := range vals[:len(vals)-1] {
-		sum += v
-	}
-	return sum / float64(len(vals)-1), true
+	return sum / float64(n), true
 }
 
 // MeanType averages per-type means over covered tasks.
@@ -89,7 +86,7 @@ func Leaderboard(snap Snapshot, boardID, aggregate string, completeOnly bool) ([
 		if covered == 0 {
 			continue
 		}
-		if completeOnly && covered < total-1 {
+		if completeOnly && covered < total {
 			continue
 		}
 		score, ok := agg(row.Scores, board)

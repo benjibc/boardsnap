@@ -20,7 +20,7 @@ func FormatLeaders(rows []LeaderRow) string {
 	for _, r := range rows {
 		partial := ""
 		if !r.Complete {
-			partial = "(partial)"
+			partial = " (partial)"
 		}
 		fmt.Fprintf(&b, "%-4d  %-30s %.4f  %d/%d%s\n", r.Rank, r.Model, r.Score, r.Covered, r.Total, partial)
 	}
@@ -51,7 +51,7 @@ func SortedBoards(m map[string]Board) []Board {
 // FormatLeadersCSV renders rows as CSV: rank,model,score,covered,total,complete.
 func FormatLeadersCSV(rows []LeaderRow) string {
 	var b strings.Builder
-	b.WriteString("RANK,MODEL,SCORE,COVERED,TOTAL,COMPLETE\n")
+	b.WriteString("rank,model,score,covered,total,complete\n")
 	for _, r := range rows {
 		fmt.Fprintf(&b, "%d,%s,%.4f,%d,%d,%t\n", r.Rank, r.Model, r.Score, r.Covered, r.Total, r.Complete)
 	}
@@ -67,8 +67,8 @@ func FormatLeadersJSON(rows []LeaderRow) string {
 		if i == len(rows)-1 {
 			comma = ""
 		}
-		fmt.Fprintf(&b, "  {\"score\": %.4f, \"rank\": %d, \"model\": %q, \"tasks_covered\": %d, \"tasks_total\": %d, \"complete\": %t}%s\n",
-			r.Score, r.Rank, r.Model, r.Covered, r.Total, r.Complete, comma)
+		fmt.Fprintf(&b, "  {\"rank\": %d, \"model\": %q, \"score\": %.4f, \"tasks_covered\": %d, \"tasks_total\": %d, \"complete\": %t}%s\n",
+			r.Rank, r.Model, r.Score, r.Covered, r.Total, r.Complete, comma)
 	}
 	b.WriteString("]\n")
 	return b.String()
